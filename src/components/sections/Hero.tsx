@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { loadGsap } from '@/lib/gsap'
 
 const Spline = dynamic(() => import('@splinetool/react-spline/next'), {
@@ -17,6 +17,11 @@ const headlineLines = ['Nơi xe của bạn', 'được chăm sóc', 'đúng cá
 
 export function Hero() {
   const rootRef = useRef<HTMLElement>(null)
+  const [isDesktop, setIsDesktop] = useState(false)
+
+  useEffect(() => {
+    setIsDesktop(window.matchMedia('(min-width: 768px)').matches)
+  }, [])
 
   useEffect(() => {
     const root = rootRef.current
@@ -58,10 +63,12 @@ export function Hero() {
 
   return (
     <section ref={rootRef} className="relative isolate min-h-screen overflow-hidden bg-canvas" aria-labelledby="hero-heading">
-      {/* Spline 3D — right half, fades into black */}
-      <div className="absolute inset-0 z-0 pointer-events-none opacity-70 md:opacity-90">
-        <Spline scene={SPLINE_SCENE} />
-      </div>
+      {/* Spline 3D — desktop only to avoid mobile lag */}
+      {isDesktop && (
+        <div className="absolute inset-0 z-0 pointer-events-none opacity-90">
+          <Spline scene={SPLINE_SCENE} />
+        </div>
+      )}
 
       {/* Left-to-right fade so text stays readable */}
       <div className="absolute inset-0 z-10 bg-[linear-gradient(90deg,rgba(0,0,0,0.97)_0%,rgba(0,0,0,0.92)_35%,rgba(0,0,0,0.4)_60%,rgba(0,0,0,0.05)_100%)]" />
